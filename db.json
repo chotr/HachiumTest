@@ -1,28 +1,88 @@
 {
   "tasks": [
     {
-      "id": "1",
-      "title": "Task 1",
+      "id": "0",
+      "title": "Task day 6",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": false
+      "completed": true,
+      "date": "2024-10-06"
+    },
+    {
+      "id": "43534",
+      "title": "Task 2",
+      "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
+      "completed": true,
+      "date": "2024-10-06"
+    },
+    {
+      "id": "78678",
+      "title": "Task 3",
+      "content": "",
+      "completed": true,
+      "date": "2024-10-06"
+    },
+    {
+      "id": "235476",
+      "title": "Task day 7",
+      "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
+      "completed": true,
+      "date": "2024-10-07"
     },
     {
       "id": "2",
       "title": "Task 2",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": false
+      "completed": true,
+      "date": "2024-10-07"
     },
     {
       "id": "3",
       "title": "Task 3",
       "content": "",
-      "completed": true
+      "completed": true,
+      "date": "2024-10-07"
     },
     {
       "id": "9769",
       "title": "đwscsdccdcds",
       "content": "",
-      "completed": false
+      "completed": true,
+      "date": "2024-10-07"
+    },
+    {
+      "id": "32e5",
+      "title": "Task day 8",
+      "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
+      "completed": true,
+      "date": "2024-10-08"
+    },
+    {
+      "id": "34h5",
+      "title": "Task 3",
+      "content": "",
+      "completed": true,
+      "date": "2024-10-08"
+    },
+    {
+      "id": "978969",
+      "title": "đwscsdccdcds",
+      "content": "",
+      "completed": true,
+      "date": "2024-10-08"
+    },
+    {
+      "id": "3235",
+      "title": "Task day 9",
+      "content": "",
+      "completed": true,
+      "date": "2024-10-09"
+    },
+    {
+      "id": "4345",
+      "title": "đwscsdccdcds",
+      "content": "",
+      "completed": true,
+      "date": "2024-10-09"
     }
   ]
 }
