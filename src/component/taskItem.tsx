@@ -10,14 +10,16 @@ import {
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import formatCustomDate from "../Utils/formatTime";
+import { useQuery } from "react-query";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   content: "string";
   date: string;
   completed: boolean;
   checkedTime: "";
+  tag: [];
 }
 
 type DateTask = "prev" | "today" | "next";
@@ -31,45 +33,52 @@ interface TaskProps {
 export default function TaskItem({ task, index, dateTask }: TaskProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [show, setShow] = useState(false);
+  const [isChecked, setIsChecked] = useState(task.completed);
+  const [tagsLits, setTagsLits] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await api.get("/tasks");
-      const today = new Date().toISOString().split("T")[0];
-
-      const filteredTasks = response.data.filter((task: Task) => {
-        if (dateTask?.trim() === "prev") {
-          return new Date(task.date) < new Date(today);
-        }
-        if (dateTask?.trim() === "today") {
-          return task.date === today;
-        }
-        if (dateTask?.trim() === "next") {
-          return new Date(task.date) > new Date(today);
-        }
+  const { data: tasksList } = useQuery("tasks", async () => {
+    const response = await api.get("/tasks");
+    const today = new Date().toISOString().split("T")[0];
+    const filteredTasks = response.data.filter((task: Task) => {
+      if (dateTask?.trim() === "prev") {
+        return new Date(task.date) < new Date(today);
+      }
+      if (dateTask?.trim() === "today") {
         return task.date === today;
-      });
+      }
+      if (dateTask?.trim() === "next") {
+        return new Date(task.date) > new Date(today);
+      }
+      return task.date === today;
+    });
 
-      setTasks(filteredTasks);
-    };
-    fetchTasks();
-  }, []);
+    setTasks(filteredTasks);
+
+    return filteredTasks;
+  });
+
+  const { data: tagsList } = useQuery("tags", async () => {
+    const response = await api.get("/tags");
+    setTagsLits(response.data);
+
+    return response.data;
+  });
 
   const handleToggle = (index: number) => setShow(!show);
 
   // Toggle task completion
-  const toggleTaskCompletion = async (id: number) => {
-    const task = tasks.find((t) => t.id === id);
+  const toggleTaskCompletion = async (id: string) => {
+    const task = tasksList.find((t: any) => t.id === id);
+    console.log(tasks);
+
     if (task) {
       const updatedTask = { ...task, completed: !task.completed };
       await api.put(`/tasks/${id}`, updatedTask);
-      setTasks(tasks.map((t) => (t.id === id ? updatedTask : t)));
+      setIsChecked(!isChecked);
     }
   };
 
   if (dateTask?.trim() === "prev") {
-    console.log(tasks);
-
     return (
       <HStack
         key={task.id}
@@ -80,7 +89,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         <Flex
           alignItems={"center"}
           w={"full"}
-          border={"1px solid rgb(244, 244, 244)"}
+          border={"1px solid rgb(235, 235, 235)"}
           borderRadius={"6px"}
           p={"8px"}
         >
@@ -134,7 +143,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         <Flex
           alignItems="center"
           w="full"
-          border="1px solid rgb(244, 244, 244)"
+          border="1px solid rgb(235, 235, 235)"
           borderRadius="6px"
           p="8px"
           justifyContent="space-between"
@@ -161,26 +170,57 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
             </Text>
           </Collapse>
         )}
+
+        <Flex w={"full"} flexWrap={"wrap"} gap={"8px"}>
+          {task.tag.map((itemTag: any) => 
+          {
+            const infoTag = tagsList.find(
+              (tagOther: any) => tagOther.id.trim() === itemTag
+            );
+
+            if (infoTag) {
+              return (
+                <Box
+                  key={index}
+                  backgroundColor={infoTag?.color}
+                  height={"30px"}
+                  padding={"0 10px"}
+                  fontSize={"14px"}
+                  borderRadius={"6px"}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  {infoTag?.name}
+                </Box>
+              );
+            }
+
+            return null;
+          }
+          )}
+        </Flex>
       </HStack>
     );
   }
+
+  
 
   return (
     <HStack
       key={task.id}
       justify="space-between"
       flexDirection={"column"}
+      gap={"8px"}
       w="100%"
     >
       <Flex
         alignItems={"center"}
         w={"full"}
-        border={"1px solid rgb(244, 244, 244)"}
+        border={"1px solid rgb(235, 235, 235)"}
         borderRadius={"6px"}
         p={"8px"}
       >
         <Checkbox
-          isChecked={task.completed}
+          isChecked={isChecked}
           onChange={() => toggleTaskCompletion(task.id)}
           w={"full"}
         >
@@ -205,6 +245,32 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           </Text>
         </Collapse>
       ) : null}
+
+      <Flex w={"full"} flexWrap={"wrap"} gap={"8px"}>
+        {task.tag.map((itemTag: any, index: number) => {
+          const infoTag = tagsList.find(
+            (tagOther: any) => tagOther.id.trim() === itemTag
+          );
+
+          if (infoTag) {
+            return (
+              <Box
+                key={index}
+                backgroundColor={infoTag?.color}
+                height={"30px"}
+                padding={"0 10px"}
+                fontSize={"14px"}
+                borderRadius={"6px"}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                {infoTag?.name}
+              </Box>
+            );
+          }
+
+          return null;
+        })}
+      </Flex>
     </HStack>
   );
 }

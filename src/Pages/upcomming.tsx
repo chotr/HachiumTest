@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import TaskItem from "../component/taskItem";
+import { useQuery } from "react-query";
 
 interface Task {
   id: number;
@@ -23,20 +24,17 @@ export default function Upcomming() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [show, setShow] = useState(Array(tasks.length).fill(false));
 
-  // Fetch tasks from mock API
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await api.get("/tasks");
-      const today = new Date().toISOString().split("T")[0];
+  const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
+    const response = await api.get("/tasks");
+    const today = new Date().toISOString().split("T")[0];
+    const filteredTasks = response.data.filter(
+      (task: Task) => new Date(task.date) > new Date(today)
+    );
 
-      const filteredTasks = response.data.filter(
-        (task: Task) => new Date(task.date) > new Date(today)
-      );
-
-      setTasks(filteredTasks);
-    };
-    fetchTasks();
-  }, []);
+    setTasks(filteredTasks);
+    
+    return response.data;
+  });
 
   const handleToggle = (index: number) => {
     setShow((prev) => {
@@ -79,7 +77,7 @@ export default function Upcomming() {
     <Box>
       <Heading mb={10}>Upcomming Tasks</Heading>
 
-      <VStack spacing={4}>
+      <VStack spacing={5}>
         {/* Task list */}
         {Object.keys(groupedTasks).map((date) => (
           <Box key={date} w={"full"}>
@@ -88,7 +86,7 @@ export default function Upcomming() {
             </Box>
 
             {groupedTasks[date].map((task: Task, index: number) => (
-              <Box mb="16px" key={index}>
+              <Box mb="20px" key={index}>
                 <TaskItem task={task} index={index} dateTask={"next"} />
               </Box>
             ))}

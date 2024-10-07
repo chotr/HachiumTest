@@ -1,21 +1,16 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import TaskItem from "../component/taskItem";
+import { useQuery, useQueryClient } from "react-query";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   content: string;
   date: string;
   completed: boolean;
-  checkedTime:""
+  checkedTime: "";
 }
 
 export default function Today() {
@@ -24,30 +19,17 @@ export default function Today() {
   );
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // Fetch tasks from mock API
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await api.get("/tasks");
-      const today = new Date().toISOString().split("T")[0];
+  // Fetch danh sách tasks với query key 'tasks'
+  const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
+    const response = await api.get("/tasks");
+    const today = new Date().toISOString().split("T")[0];
+    const filteredTasks = response.data.filter((task: Task) => task.date === today);
 
-      const filteredTasks = response.data.filter(
-        (task: Task) => task.date === today
-      );
+    setTasks(filteredTasks);
+    
+    return response.data;
+  });
 
-      setTasks(filteredTasks);
-    };
-    fetchTasks();
-  }, []);
-
-  // Toggle task completion
-  // const toggleTaskCompletion = async (id: number) => {
-  //   const task = tasks.find((t) => t.id === id);
-  //   if (task) {
-  //     const updatedTask = { ...task, completed: !task.completed };
-  //     await api.put(`/tasks/${id}`, updatedTask);
-  //     setTasks(tasks.map((t) => (t.id === id ? updatedTask : t)));
-  //   }
-  // };
 
   // Filter tasks
   const filteredTasks = tasks.filter((task) => {
@@ -98,7 +80,7 @@ export default function Today() {
           Incomplete
         </Button>
       </Flex>
-      <VStack spacing={4}>
+      <VStack spacing={5}>
         {/* Task list */}
         {filteredTasks.map((task: Task, index: number) => (
           <Box key={index} w="full">

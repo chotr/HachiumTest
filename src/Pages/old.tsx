@@ -2,6 +2,7 @@ import { Box, Button, Flex, Heading, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import TaskItem from "../component/taskItem";
+import { useQuery } from "react-query";
 
 interface Task {
   id: number;
@@ -18,20 +19,19 @@ export default function Old() {
   );
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // Fetch tasks from mock API
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await api.get("/tasks");
-      const today = new Date().toISOString().split("T")[0];
-
-      const filteredTasks = response.data.filter(
+  const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
+    const response = await api.get("/tasks");
+    const today = new Date().toISOString().split("T")[0];
+   
+    const filteredTasks = response.data.filter(
         (task: Task) => new Date(task.date) < new Date(today)
       );
 
-      setTasks(filteredTasks);
-    };
-    fetchTasks();
-  }, []);
+    setTasks(filteredTasks);
+    
+    return response.data;
+  });
+
 
   // Toggle task completion
   const toggleTaskCompletion = async (id: number) => {
