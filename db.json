@@ -4,7 +4,7 @@
       "id": "fsdfsd",
       "title": "Task day 6",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": true,
+      "completed": false,
       "date": "2024-10-06",
       "checkedTime": "",
       "tag": [
@@ -16,7 +16,7 @@
       "id": "43534",
       "title": "Task 2",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": false,
+      "completed": true,
       "date": "2024-10-06",
       "checkedTime": "2024-10-06T10:30:00Z",
       "tag": [
@@ -27,7 +27,7 @@
       "id": "78678",
       "title": "Task 3",
       "content": "",
-      "completed": false,
+      "completed": true,
       "date": "2024-10-06",
       "checkedTime": "2024-10-06T11:15:00Z",
       "tag": []
