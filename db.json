@@ -60,7 +60,7 @@
       "id": "3",
       "title": "Task 3",
       "content": "",
-      "completed": true,
+      "completed": false,
       "date": "2024-10-07",
       "checkedTime": "2024-10-07T09:30:00Z",
       "tag": []
@@ -69,7 +69,7 @@
       "id": "9769",
       "title": "đwscsdccdcds",
       "content": "",
-      "completed": true,
+      "completed": false,
       "date": "2024-10-07",
       "tag": [
         "90e2",

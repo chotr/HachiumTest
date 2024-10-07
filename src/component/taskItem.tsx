@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import formatCustomDate from "../Utils/formatTime";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 interface Task {
   id: string;
@@ -36,6 +36,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
   const [isChecked, setIsChecked] = useState(task.completed);
   const [tagsLits, setTagsLits] = useState<any[]>([]);
 
+  const queryClient = useQueryClient();
   const { data: tasksList } = useQuery("tasks", async () => {
     const response = await api.get("/tasks");
     const today = new Date().toISOString().split("T")[0];
@@ -64,6 +65,10 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     return response.data;
   });
 
+  useEffect(() => {
+    setIsChecked(task.completed);
+  }, []);
+
   const handleToggle = (index: number) => setShow(!show);
 
   // Toggle task completion
@@ -74,6 +79,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
       const updatedTask = { ...task, completed: !task.completed };
       await api.put(`/tasks/${id}`, updatedTask);
       setIsChecked(!isChecked);
+      queryClient.invalidateQueries("tasks");
     }
   };
 
@@ -171,9 +177,8 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         )}
 
         <Flex w={"full"} flexWrap={"wrap"} gap={"8px"}>
-          {task.tag.map((itemTag: any) => 
-          {
-            const infoTag = tagsList.find(
+          {task.tag.map((itemTag: any) => {
+            const infoTag = tagsList?.find(
               (tagOther: any) => tagOther.id.trim() === itemTag
             );
 
@@ -194,14 +199,11 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
             }
 
             return null;
-          }
-          )}
+          })}
         </Flex>
       </HStack>
     );
   }
-
-  
 
   return (
     <HStack

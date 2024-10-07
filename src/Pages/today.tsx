@@ -18,6 +18,7 @@ export default function Today() {
     "all"
   );
   const [tasks, setTasks] = useState<Task[]>([]);
+  const queryClient = useQueryClient();
 
   // Fetch danh sách tasks với query key 'tasks'
   const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
@@ -33,6 +34,7 @@ export default function Today() {
 
   // Filter tasks
   const filteredTasks = tasks.filter((task) => {
+    queryClient.invalidateQueries("tasks");
     if (filter === "completed") return task.completed;
     if (filter === "incomplete") return !task.completed;
     return true;
