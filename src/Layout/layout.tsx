@@ -1,41 +1,32 @@
 import { Outlet } from "react-router";
-import { useRef } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Input,
-  VStack,
-  HStack,
-  Heading,
-  Flex,
-  Text,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Collapse,
-  Textarea,
-} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { Box, Input, Flex, Text, Divider } from "@chakra-ui/react";
 import { BellIcon, DragHandleIcon, Search2Icon } from "@chakra-ui/icons";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import api from "../mockApi";
 
 export default function Layout() {
   const refMain = useRef<HTMLDivElement>(null);
 
+  const [tagsLits, setTagsLits] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await api.get("/tags");
+        console.log(response.data);
+        setTagsLits(response.data); 
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      }
+    };
+    fetchTags();
+
+    console.log(tagsLits);
+  }, []);
+
   return (
-    <div ref={refMain} className="">
-      {/* <div
-        ref={refCursor}
-        className='h-2 w-2 rounded-full bg-dark-primary absolute  select-none z-10 top-0 left-0'
-      >
-      </div>
-      <div
-        ref={refFollowCursor}
-        className='h-10 w-10 rounded-full border border-dark-primary absolute z-10 select-none top-0 left-0'
-      >
-      </div> */}
+    <div ref={refMain}>
       <Box>
         <Box maxW="1920px" mx="auto" px={"15px"}>
           <Flex gap={"24px"} minHeight={"100vh"} padding={"30px 0"}>
@@ -61,39 +52,77 @@ export default function Layout() {
                 Task
               </Text>
 
-              <Box mb={"12px"}>
-                <NavLink
-                  to={"/"}
-                  style={({ isActive }) => ({
-                    display: "flex",
-                    gap: "16px",
-                    alignItems: "center",
-                    padding: "16px",
-                    backgroundColor: isActive ? "rgb(235, 235, 235)" : "transparent",
-                    borderRadius:"8px",
-                    transition: 'all 0.2s ease-in-out',
-                  })}
-                >
-                  <BellIcon /> Today
-                </NavLink>
-              </Box>
+              <Flex flexDirection={"column"} gap={"16px"} mb={"24px"}>
+                <Box>
+                  <NavLink
+                    to={"/"}
+                    style={({ isActive }) => ({
+                      display: "flex",
+                      gap: "16px",
+                      alignItems: "center",
+                      padding: "16px",
+                      backgroundColor: isActive
+                        ? "rgb(235, 235, 235)"
+                        : "transparent",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease-in-out",
+                    })}
+                  >
+                    <BellIcon /> Today Tasks
+                  </NavLink>
+                </Box>
 
-              <Box>
-                <NavLink
-                  to={"/upcomming"}
-                  style={({ isActive }) => ({
-                    display: "flex",
-                    gap: "16px",
-                    alignItems: "center",
-                    padding: "16px",
-                    backgroundColor: isActive ? "rgb(235, 235, 235)" : "transparent",
-                    borderRadius:"8px",
-                    transition: 'all 0.2s ease-in-out',
-                  })}
-                >
-                  <DragHandleIcon /> Upcoming
-                </NavLink>
-              </Box>
+                <Box>
+                  <NavLink
+                    to={"/upcomming"}
+                    style={({ isActive }) => ({
+                      display: "flex",
+                      gap: "16px",
+                      alignItems: "center",
+                      padding: "16px",
+                      backgroundColor: isActive
+                        ? "rgb(235, 235, 235)"
+                        : "transparent",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease-in-out",
+                    })}
+                  >
+                    <DragHandleIcon /> Upcoming Taks
+                  </NavLink>
+                </Box>
+
+                <Box>
+                  <NavLink
+                    to={"/old"}
+                    style={({ isActive }) => ({
+                      display: "flex",
+                      gap: "16px",
+                      alignItems: "center",
+                      padding: "16px",
+                      backgroundColor: isActive
+                        ? "rgb(235, 235, 235)"
+                        : "transparent",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease-in-out",
+                    })}
+                  >
+                    <DragHandleIcon /> Old Tasks
+                  </NavLink>
+                </Box>
+              </Flex>
+
+              <Divider mb={"20px"} />
+              <Text fontSize="18px" fontWeight={"500"} mb={"24px"}>
+                Tag
+              </Text>
+
+              <Flex>
+                {tagsLits.map((tag: any, index) => (
+                  <Box key={index} backgroundColor={tag?.color}>
+                    {tag?.namee}
+                  </Box>
+                ))}
+              </Flex>
             </Box>
             <Box flex={1}>
               <Outlet></Outlet>

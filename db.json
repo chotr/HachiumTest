@@ -4,85 +4,122 @@
       "id": "0",
       "title": "Task day 6",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": true,
-      "date": "2024-10-06"
+      "completed": false,
+      "date": "2024-10-06",
+      "checkedTime": "",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "43534",
       "title": "Task 2",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
       "completed": true,
-      "date": "2024-10-06"
+      "date": "2024-10-06",
+      "checkedTime": "2024-10-06T10:30:00Z",
+      "tag": ["tag 1"]
     },
     {
       "id": "78678",
       "title": "Task 3",
       "content": "",
       "completed": true,
-      "date": "2024-10-06"
+      "date": "2024-10-06",
+      "checkedTime": "2024-10-06T11:15:00Z",
+      "tag": []
     },
     {
       "id": "235476",
       "title": "Task day 7",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": true,
-      "date": "2024-10-07"
+      "completed": false,
+      "date": "2024-10-07",
+      "checkedTime": "2024-10-07T08:45:00Z",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "2",
       "title": "Task 2",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": true,
-      "date": "2024-10-07"
+      "completed": false,
+      "date": "2024-10-07",
+      "checkedTime": "",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "3",
       "title": "Task 3",
       "content": "",
       "completed": true,
-      "date": "2024-10-07"
+      "date": "2024-10-07",
+      "checkedTime": "2024-10-07T09:30:00Z",
+      "tag": []
     },
     {
       "id": "9769",
       "title": "đwscsdccdcds",
       "content": "",
       "completed": true,
-      "date": "2024-10-07"
+      "date": "2024-10-07",
+      "tag": ["tag 3", "tag 1"]
     },
     {
       "id": "32e5",
       "title": "Task day 8",
       "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
       "completed": true,
-      "date": "2024-10-08"
+      "date": "2024-10-08",
+      "checkedTime": "2024-10-08T09:15:00Z",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "34h5",
       "title": "Task 3",
       "content": "",
       "completed": true,
-      "date": "2024-10-08"
+      "date": "2024-10-08",
+      "checkedTime": "2024-10-08T10:30:00Z",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "978969",
       "title": "đwscsdccdcds",
       "content": "",
-      "completed": true,
-      "date": "2024-10-08"
+      "completed": false,
+      "date": "2024-10-08",
+      "checkedTime": "2024-10-08T11:00:00Z",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "3235",
       "title": "Task day 9",
       "content": "",
       "completed": true,
-      "date": "2024-10-09"
+      "date": "2024-10-09",
+      "checkedTime": "2024-10-09T09:00:00Z",
+      "tag": ["tag 1", "tag 2"]
     },
     {
       "id": "4345",
       "title": "đwscsdccdcds",
       "content": "",
-      "completed": true,
-      "date": "2024-10-09"
+      "completed": false,
+      "date": "2024-10-09",
+      "checkedTime": "2024-10-09T09:45:00Z",
+      "tag": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "tag 1",
+      "color": "#FF5733"
+    },
+    {
+      "name": "tag 2",
+      "color": "#33FF57"
+    },
+    {
+      "name": "tag 3",
+      "color": "#3357FF"
     }
   ]
 }

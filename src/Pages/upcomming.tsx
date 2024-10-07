@@ -1,16 +1,11 @@
 import {
   Box,
-  Button,
-  Checkbox,
-  Collapse,
-  Flex,
   Heading,
-  HStack,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import api from "../mockApi";
+import TaskItem from "../component/taskItem";
 
 interface Task {
   id: number;
@@ -18,6 +13,7 @@ interface Task {
   content: "string";
   date: string;
   completed: boolean;
+  checkedTime:""
 }
 
 export default function Upcomming() {
@@ -68,7 +64,7 @@ export default function Upcomming() {
   });
 
   const groupTasksByDate = (tasks: any) => {
-    return tasks.reduce((acc: any, task: any) => {
+    return tasks.reduce((acc: any, task: Task) => {
       if (!acc[task.date]) {
         acc[task.date] = [];
       }
@@ -81,46 +77,8 @@ export default function Upcomming() {
 
   return (
     <Box>
-      <Heading mb={10}>Upcomming</Heading>
+      <Heading mb={10}>Upcomming Tasks</Heading>
 
-      <Flex gap={"12px"} mb={"32px"}>
-        <Button
-          w="full"
-          onClick={() => setFilter("all")}
-          //   variant={filter === "all" ? "solid" : "outline"}
-          backgroundColor={
-            filter === "all" ? "rgb(235, 235, 235)" : "transparent"
-          }
-          border={"1px solid rgb(235, 235, 235)"}
-          _hover={{ backgroundColor: "rgb(235, 235, 235)" }}
-        >
-          All
-        </Button>
-        <Button
-          w="full"
-          onClick={() => setFilter("completed")}
-          //   variant={filter === "completed" ? "solid" : "outline"}
-          backgroundColor={
-            filter === "completed" ? "rgb(235, 235, 235)" : "transparent"
-          }
-          border={"1px solid rgb(235, 235, 235)"}
-          _hover={{ backgroundColor: "rgb(235, 235, 235)" }}
-        >
-          Completed
-        </Button>
-        <Button
-          w="full"
-          onClick={() => setFilter("incomplete")}
-          //   variant={filter === "incomplete" ? "solid" : "outline"}
-          backgroundColor={
-            filter === "incomplete" ? "rgb(235, 235, 235)" : "transparent"
-          }
-          border={"1px solid rgb(235, 235, 235)"}
-          _hover={{ backgroundColor: "rgb(235, 235, 235)" }}
-        >
-          Incomplete
-        </Button>
-      </Flex>
       <VStack spacing={4}>
         {/* Task list */}
         {Object.keys(groupedTasks).map((date) => (
@@ -130,48 +88,9 @@ export default function Upcomming() {
             </Box>
 
             {groupedTasks[date].map((task: Task, index: number) => (
-              <HStack
-                key={task.id}
-                justify="space-between"
-                flexDirection="column"
-                w="100%"
-                mb="16px"
-              >
-                <Flex
-                  alignItems="center"
-                  w="full"
-                  border="1px solid rgb(244, 244, 244)"
-                  borderRadius="6px"
-                  p="8px"
-                  justifyContent="space-between"
-                  gap="10px"
-                >
-                  <Box>{task.title}</Box>
-                  {task.content.trim() !== "" && (
-                    <Button size="sm" onClick={() => handleToggle(index)}>
-                      Show {show[index] ? "Less" : "More"}
-                    </Button>
-                  )}
-                </Flex>
-
-                {task.content.trim() !== "" && (
-                  <Collapse
-                    startingHeight={0}
-                    in={show[index]}
-                    style={{ width: "100%" }}
-                  >
-                    <Text
-                      as="div"
-                      whiteSpace="pre-wrap"
-                      border="1px solid rgb(244, 244, 244)"
-                      borderRadius="6px"
-                      p="24px"
-                    >
-                      {task.content}
-                    </Text>
-                  </Collapse>
-                )}
-              </HStack>
+              <Box mb="16px" key={index}>
+                <TaskItem task={task} index={index} dateTask={"next"} />
+              </Box>
             ))}
           </Box>
         ))}
