@@ -23,9 +23,9 @@ export default function Today() {
   const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
     const response = await api.get("/tasks");
     const today = new Date().toISOString().split("T")[0];
-    const filteredTasks = response.data.filter((task: Task) => task.date === today);
+    const filteredTasksList = response.data.filter((task: Task) => task.date === today);
 
-    setTasks(filteredTasks);
+    setTasks(filteredTasksList);
     
     return response.data;
   });
@@ -46,7 +46,6 @@ export default function Today() {
         <Button
           w="full"
           onClick={() => setFilter("all")}
-          //   variant={filter === "all" ? "solid" : "outline"}
           backgroundColor={
             filter === "all" ? "rgb(235, 235, 235)" : "transparent"
           }
@@ -58,7 +57,6 @@ export default function Today() {
         <Button
           w="full"
           onClick={() => setFilter("completed")}
-          //   variant={filter === "completed" ? "solid" : "outline"}
           backgroundColor={
             filter === "completed" ? "rgb(235, 235, 235)" : "transparent"
           }
@@ -70,7 +68,6 @@ export default function Today() {
         <Button
           w="full"
           onClick={() => setFilter("incomplete")}
-          //   variant={filter === "incomplete" ? "solid" : "outline"}
           backgroundColor={
             filter === "incomplete" ? "rgb(235, 235, 235)" : "transparent"
           }

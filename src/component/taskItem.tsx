@@ -69,7 +69,6 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
   // Toggle task completion
   const toggleTaskCompletion = async (id: string) => {
     const task = tasksList.find((t: any) => t.id === id);
-    console.log(tasks);
 
     if (task) {
       const updatedTask = { ...task, completed: !task.completed };
@@ -248,7 +247,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
 
       <Flex w={"full"} flexWrap={"wrap"} gap={"8px"}>
         {task.tag.map((itemTag: any, index: number) => {
-          const infoTag = tagsList.find(
+          const infoTag = tagsList?.find(
             (tagOther: any) => tagOther.id.trim() === itemTag
           );
 
