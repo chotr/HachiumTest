@@ -60,7 +60,7 @@
       "id": "3",
       "title": "Task 3",
       "content": "",
-      "completed": false,
+      "completed": true,
       "date": "2024-10-07",
       "checkedTime": "2024-10-07T09:30:00Z",
       "tag": []
@@ -123,54 +123,6 @@
         "436b",
         "2aa8"
       ]
-    },
-    {
-      "id": "4345",
-      "title": "đwscsdccdcds",
-      "content": "",
-      "completed": false,
-      "date": "2024-10-09",
-      "checkedTime": "2024-10-09T09:45:00Z",
-      "tag": []
-    },
-    {
-      "id": "8c07",
-      "title": "Task day 47",
-      "content": "This is the first task.\n- Item 1\n- Item 2\n- Item 3",
-      "completed": true,
-      "date": "2024-10-07",
-      "checkedTime": "2024-10-07T08:45:00Z",
-      "tag": [
-        "436b",
-        "2aa8"
-      ]
-    },
-    {
-      "id": "cdd5",
-      "title": "vfrvrfvrf",
-      "content": "",
-      "completed": true,
-      "date": "2024-10-07",
-      "checkedTime": "",
-      "tag": []
-    },
-    {
-      "id": "9c91",
-      "title": "cscscsc",
-      "content": "scscscsc\nsc\nsc\nsc\ns\ncsc",
-      "completed": true,
-      "date": "2024-10-07",
-      "checkedTime": "",
-      "tag": []
-    },
-    {
-      "id": "0e8e",
-      "title": "rgergfreg",
-      "content": "gfrefrefrefref\nrè\nrè\nè\nrể\nf",
-      "completed": true,
-      "date": "2024-10-07",
-      "checkedTime": "",
-      "tag": []
     }
   ],
   "tags": [

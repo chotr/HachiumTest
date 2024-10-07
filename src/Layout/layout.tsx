@@ -21,7 +21,9 @@ import {
 } from "@chakra-ui/react";
 import {
   BellIcon,
+  CloseIcon,
   DragHandleIcon,
+  HamburgerIcon,
   RepeatClockIcon,
   Search2Icon,
 } from "@chakra-ui/icons";
@@ -30,6 +32,7 @@ import api from "../mockApi";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useQuery, useQueryClient } from "react-query";
+import { relative } from "path";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -50,6 +53,7 @@ export default function Layout() {
   });
   const [selectedTags, setSelectedTags] = useState([]);
   const queryClient = useQueryClient();
+  const [navOpen, setNavOpen] = useState(true);
 
   const { data: tagsList } = useQuery("tags", async () => {
     const response = await api.get("/tags");
@@ -66,15 +70,20 @@ export default function Layout() {
       }
     });
 
-    setTask({...newTask, tag: selectedTags})
+    setTask({ ...newTask, tag: selectedTags });
   };
+
+  const toggleNav = () => setNavOpen(!navOpen);
 
   // Add new task
   const addTask = async () => {
     if (newTask.title !== "") {
       const response = await api.post("/tasks", newTask);
 
-      if (response.status.toString() === "201") {
+      if (
+        response.status.toString() === "201" ||
+        response.status.toString() === "200"
+      ) {
         setTask({
           title: "",
           content: "",
@@ -106,16 +115,73 @@ export default function Layout() {
     <div ref={refMain}>
       <Box>
         <Box maxW="1920px" mx="auto" px={"15px"}>
+          <Box
+            w={"fit-content"}
+            ml={"auto"}
+            mb={"-50px"}
+            transform={"translate(0, 25px)"}
+            style={{ alignItems: "center", gap: "10px" }}
+            cursor={"pointer"}
+            display={{ base: "flex", xl: "none" }}
+            onClick={() => toggleNav()}
+          >
+            <Box
+              w={"40px"}
+              h={"40px"}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              border={"1px solid rgb(235, 235, 235)"}
+              borderRadius={"6px"}
+            >
+              <HamburgerIcon />
+            </Box>{" "}
+            Menu
+          </Box>
           <Flex gap={"24px"} minHeight={"100vh"} padding={"30px 0"}>
             <Box
-              w="380px"
+              w="100%"
+              maxWidth={"380px"}
               backgroundColor={"rgb(244, 244, 244)"}
               borderRadius={"16px"}
               boxShadow={"rgba(0, 0, 0, 0.08) 0px 0px 0px"}
               padding={"30px 20px"}
+              position={{ base: "absolute", xl: "relative" }}
+              height={{ base: "calc(100vh - 30px)", xl: "auto" }}
+              top={{ base: "15px", xl: "unset" }}
+              zIndex={"999"}
+              transition={"all 0.4s ease-in-out"}
+              transform={{
+                base: navOpen
+                  ? "translate(calc(-100% - 15px), 0)"
+                  : "translate(0, 0)",
+                xl: "unset",
+              }}
             >
+              <Box
+                w={"40px"}
+                h={"40px"}
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                display={{ base: "flex", xl: "none" }}
+                border={"1px solid rgb(235, 235, 235)"}
+                borderRadius={"6px"}
+                marginBottom={"20px"}
+                ml={"auto"}
+                onClick={() => {
+                  console.log("Box clicked"); // Log để kiểm tra sự kiện onClick
+                  setNavOpen(true); // Đảm bảo setNavOpen được gọi
+                }}
+                cursor={"pointer"}
+              >
+                <CloseIcon />
+              </Box>
               {/* search */}
-              <Box position={"relative"} mb={"16px"}>
+              {/* <Box position={"relative"} mb={"16px"}>
                 <Input
                   placeholder="Search task"
                   pl={"40px"}
@@ -127,7 +193,7 @@ export default function Layout() {
                   top={"50%"}
                   transform={"translate(0, -50%)"}
                 />
-              </Box>
+              </Box> */}
 
               <Box
                 borderRadius={"10px"}

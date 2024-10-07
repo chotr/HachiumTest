@@ -79,7 +79,7 @@ export default function Today() {
       </Flex>
       <VStack spacing={5}>
         {/* Task list */}
-        {filteredTasks.map((task: Task, index: number) => (
+        {filteredTasks?.map((task: Task, index: number) => (
           <Box key={index} w="full">
             <TaskItem task={task} index={index} />
           </Box>

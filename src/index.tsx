@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
+import customTheme from "./theme"; 
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,7 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <ChakraProvider>
+  <ChakraProvider theme={customTheme}>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/">
         <App />
