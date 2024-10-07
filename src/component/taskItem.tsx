@@ -379,7 +379,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
               type="text"
               placeholder="Enter your task title"
               mb={"16px"}
-              value={task.title}
+              value={newTask.title}
               onChange={(e) => setTask({ ...newTask, title: e.target.value })}
             ></Input>
             <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
@@ -390,7 +390,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
               placeholder="Enter your task content"
               minHeight={"200px"}
               mb={"16px"}
-              value={task.content}
+              value={newTask.content}
               onChange={(e) => setTask({ ...newTask, content: e.target.value })}
             ></Textarea>
 
