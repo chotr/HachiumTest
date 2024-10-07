@@ -29,14 +29,19 @@ import { NavLink } from "react-router-dom";
 import api from "../mockApi";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { relative } from "path";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
+interface Tag {
+  name: string;
+  color: string;
+}
+
 export default function Layout() {
-  const [tagsLits, setTagsLits] = useState<any[]>([]);
+  // const [tagsLits, setTagsLits] = useState<any[]>([]);
   const refMain = useRef<HTMLDivElement>(null);
   const {
     isOpen: inpenModal1,
@@ -58,15 +63,37 @@ export default function Layout() {
     checkedTime: "",
     tag: [],
   });
+  const [newTag, setNewTag] = useState({
+    name: "",
+    color: "wheat",
+  });
   const [selectedTags, setSelectedTags] = useState([]);
   const queryClient = useQueryClient();
   const [navOpen, setNavOpen] = useState(true);
 
   const { data: tagsList } = useQuery("tags", async () => {
     const response = await api.get("/tags");
-    setTagsLits(response.data);
+
     return response.data;
   });
+
+  const mutation = useMutation<Tag, Error, Tag>(
+    async (newTag) => {
+      return await api.post("/tags", newTag);
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries("tags");
+        onCloseModal2();
+      },
+    }
+  );
+
+  const handleAddTag = () => {
+    if (newTag.name.trim() !== "" && newTag.color.trim() !== "") {
+      mutation.mutate(newTag);
+    }
+  };
 
   const handleCheckboxChange = (tag: any) => {
     setSelectedTags((prev: any) => {
@@ -76,16 +103,19 @@ export default function Layout() {
         return [...prev, tag.id];
       }
     });
-
-    setTask({ ...newTask, tag: selectedTags });
   };
 
   const toggleNav = () => setNavOpen(!navOpen);
 
   // Add new task
   const addTask = async () => {
+    const _newTask = {
+      ...newTask,
+      tag: [...selectedTags],
+    };
+
     if (newTask.title !== "") {
-      const response = await api.post("/tasks", newTask);
+      const response = await api.post("/tasks", _newTask);
 
       if (
         response.status.toString() === "201" ||
@@ -101,7 +131,7 @@ export default function Layout() {
         });
 
         queryClient.invalidateQueries("tasks");
-
+        setSelectedTags([]);
         onCloseModal1();
       }
     }
@@ -209,6 +239,8 @@ export default function Layout() {
                 backgroundColor={"#fffbfb"}
                 cursor={"pointer"}
                 onClick={onOpenModal1}
+                _hover={{backgroundColor: 'white'}}
+                transition={"all 0.2s ease-in-out"}
               >
                 + Add a new task
               </Box>
@@ -221,6 +253,8 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/"}
+                    className={'nav-link'}
+
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -230,8 +264,9 @@ export default function Layout() {
                         ? "rgb(235, 235, 235)"
                         : "transparent",
                       borderRadius: "8px",
-                      transition: "all 0.2s ease-in-out",
+                      transition: "all 0.2s ease-in-out"
                     })}
+
                   >
                     <BellIcon /> Today Tasks
                   </NavLink>
@@ -240,6 +275,7 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/upcomming"}
+                    className={'nav-link'}
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -259,6 +295,7 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/old"}
+                    className={'nav-link'}
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -283,7 +320,7 @@ export default function Layout() {
               </Text>
 
               <Flex flexWrap={"wrap"} gap={"8px"}>
-                {tagsLits.map((tag: any, index) => (
+                {tagsList?.map((tag: any, index: number) => (
                   <Box
                     key={index}
                     backgroundColor={tag?.color}
@@ -381,7 +418,7 @@ export default function Layout() {
               </Text>
 
               <Flex flexWrap={"wrap"} gap={"8px"}>
-                {tagsLits.map((tag: any, index) => (
+                {tagsList?.map((tag: any, index: number) => (
                   <Checkbox
                     key={index}
                     backgroundColor={tag?.color}
@@ -428,7 +465,21 @@ export default function Layout() {
                 type="text"
                 placeholder="Enter tag name"
                 mb={"16px"}
-                onChange={(e) => setTask({ ...newTask, title: e.target.value })}
+                onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
+              ></Input>
+
+              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+                Tag color
+              </Text>
+
+              <Input
+                type="color"
+                mb={"16px"}
+                value={"#f5deb3"}
+                p={"0"}
+                onChange={(e) =>
+                  setNewTag({ ...newTag, color: e.target.value })
+                }
               ></Input>
             </ModalBody>
 
@@ -440,7 +491,7 @@ export default function Layout() {
                 backgroundColor={"#76a7d5"}
                 color={"white"}
                 _hover={{ backgroundColor: "#edab93" }}
-                onClick={() => addTask()}
+                onClick={() => handleAddTag()}
               >
                 Submit
               </Button>

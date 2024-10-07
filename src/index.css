@@ -16,3 +16,6 @@ code {
   padding: 15px;
 }
 
+.nav-link:hover {
+  background-color: rgb(235, 235, 235) !important;
+}

@@ -5,12 +5,24 @@ import {
   Collapse,
   Flex,
   HStack,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  Textarea,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import api from "../mockApi";
 import formatCustomDate from "../Utils/formatTime";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import Calendar from "react-calendar";
 
 interface Task {
   id: string;
@@ -30,17 +42,34 @@ interface TaskProps {
   dateTask?: DateTask;
 }
 
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 export default function TaskItem({ task, index, dateTask }: TaskProps) {
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [show, setShow] = useState(false);
-//   const [isChecked, setIsChecked] = useState(task.completed);
+  const {
+    isOpen: inpenModal1,
+    onOpen: onOpenModal1,
+    onClose: onCloseModal1,
+  } = useDisclosure();
+  const [value, onChange] = useState<Value>(task.date);
+  const [isOpenCal, setOpencal] = useState(false);
+  const [newTask, setTask] = useState({
+    title: task.title,  
+    content: task.content,
+    completed: task.completed,
+    date: task.date,
+    checkedTime: task.checkedTime,
+    tag: task.tag,
+  });
   const [tagsLits, setTagsLits] = useState<any[]>([]);
 
   const queryClient = useQueryClient();
+
   const { data: tasksList } = useQuery("tasks", async () => {
     const response = await api.get("/tasks");
     const today = new Date().toISOString().split("T")[0];
-    
+
     const filteredTasks = response.data.filter((task: Task) => {
       if (dateTask?.trim() === "prev") {
         return new Date(task.date) < new Date(today);
@@ -57,6 +86,25 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     return filteredTasks;
   });
 
+  // Mutation delete task
+  const deleteTaskMutation = useMutation(
+    async (taskId) => {
+      await api.delete(`/tasks/${taskId}`);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("tasks");
+      },
+      onError: (error) => {
+        console.error("Error deleting task:", error);
+      },
+    }
+  );
+
+  const handleDeleteTask = () => {
+    deleteTaskMutation.mutate(task.id);
+  };
+
   const { data: tagsList } = useQuery("tags", async () => {
     const response = await api.get("/tags");
     setTagsLits(response.data);
@@ -64,11 +112,46 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     return response.data;
   });
 
-//   useEffect(() => {
-//     setIsChecked(task.completed);
-//   }, []);
-
   const handleToggle = (index: number) => setShow(!show);
+
+  const handleChangeDate = (date: any) => {
+    const formattedDate = date.toISOString().split("T")[0];
+
+    onChange(formattedDate);
+    setOpencal(false);
+    setTask({
+      ...newTask,
+      date: formattedDate,
+    });
+  };
+
+  const editTask = async () => {
+    const _newTask = {
+      ...newTask,
+    };
+
+    if (newTask.title !== "") {
+      const response = await api.post("/tasks", _newTask);
+
+      if (
+        response.status.toString() === "201" ||
+        response.status.toString() === "200"
+      ) {
+        setTask({
+          title: "",
+          content: "",
+          completed: false,
+          date: "",
+          checkedTime: "",
+          tag: [],
+        });
+
+        queryClient.invalidateQueries("tasks");
+        // setSelectedTags([]);
+        onCloseModal1();
+      }
+    }
+  };
 
   // Toggle task completion
   const toggleTaskCompletion = async (id: string) => {
@@ -77,7 +160,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     if (task) {
       const updatedTask = { ...task, completed: !task.completed };
       await api.put(`/tasks/${id}`, updatedTask);
-    //   setIsChecked(!isChecked);
+      //   setIsChecked(!isChecked);
       queryClient.invalidateQueries("tasks");
     }
   };
@@ -218,6 +301,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         border={"1px solid rgb(235, 235, 235)"}
         borderRadius={"6px"}
         p={"8px"}
+        gap={"15px"}
       >
         <Checkbox
           isChecked={task.completed}
@@ -231,6 +315,12 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
             Show {show ? "Less" : "More"}
           </Button>
         ) : null}
+        <DeleteIcon
+          color={"gray"}
+          cursor={"pointer"}
+          onClick={() => handleDeleteTask()}
+        />
+        <EditIcon color={"blue"} cursor={"pointer"}  onClick={onOpenModal1}/>
       </Flex>
       {task.content.trim() !== "" ? (
         <Collapse startingHeight={0} in={show} style={{ width: "100%" }}>
@@ -271,6 +361,99 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           return null;
         })}
       </Flex>
+
+      <Modal isOpen={inpenModal1} onClose={onCloseModal1} size={"5xl"}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add your task</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+              Title{" "}
+              <Box as={"span"} color={"red"}>
+                *
+              </Box>
+            </Text>
+
+            <Input
+              type="text"
+              placeholder="Enter your task title"
+              mb={"16px"}
+              value={task.title}
+              onChange={(e) => setTask({ ...newTask, title: e.target.value })}
+            ></Input>
+            <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+              Content
+            </Text>
+
+            <Textarea
+              placeholder="Enter your task content"
+              minHeight={"200px"}
+              mb={"16px"}
+              value={task.content}
+              onChange={(e) => setTask({ ...newTask, content: e.target.value })}
+            ></Textarea>
+
+            <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+              Date
+            </Text>
+            <Box position={"relative"} mb={"16px"}>
+              <Input
+                type="text"
+                placeholder="Enter date"
+                value={value?.toLocaleString()}
+                mb={"16px"}
+                onClick={() => {
+                  setOpencal(!isOpenCal);
+                }}
+                readOnly
+                cursor={"pointer"}
+                userSelect={"none"}
+              />
+              {isOpenCal && (
+                <Box position={"absolute"} bottom={"100%"}>
+                  <Calendar onChange={handleChangeDate} value={value} />
+                </Box>
+              )}
+            </Box>
+
+            {/* <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+              Choose tag
+            </Text> */}
+
+            {/* <Flex flexWrap={"wrap"} gap={"8px"}>
+                {tagsList?.map((tag: any, index: number) => (
+                  <Checkbox
+                    key={index}
+                    backgroundColor={tag?.color}
+                    height={"30px"}
+                    padding={"0 10px"}
+                    fontSize={"14px"}
+                    borderRadius={"6px"}
+                    style={{ display: "flex", alignItems: "center" }}
+                    onChange={() => handleCheckboxChange(tag)}
+                  >
+                    {tag?.name}
+                  </Checkbox>
+                ))}
+              </Flex> */}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="gray" mr={3} onClick={onCloseModal1}>
+              Close
+            </Button>
+            <Button
+              backgroundColor={"#76a7d5"}
+              color={"white"}
+              _hover={{ backgroundColor: "#edab93" }}
+              onClick={() => editTask()}
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </HStack>
   );
 }
