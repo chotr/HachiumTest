@@ -32,7 +32,7 @@ import "react-calendar/dist/Calendar.css";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { relative } from "path";
 
-type ValuePiece = Date | null;
+type ValuePiece = Date | string | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 interface Tag {
@@ -53,7 +53,7 @@ export default function Layout() {
     onOpen: onOpenModal2,
     onClose: onCloseModal2,
   } = useDisclosure();
-  const [value, onChange] = useState<Value>(new Date());
+  const [value, onChange] = useState<Value>(new Date().toISOString().split("T")[0]);
   const [isOpenCal, setOpencal] = useState(false);
   const [newTask, setTask] = useState({
     title: "",
@@ -372,10 +372,7 @@ export default function Layout() {
                 onChange={(e) => setTask({ ...newTask, title: e.target.value })}
               ></Input>
               <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Content{" "}
-                <Box as={"span"} color={"red"}>
-                  *
-                </Box>
+                Content
               </Text>
 
               <Textarea
@@ -388,10 +385,7 @@ export default function Layout() {
               ></Textarea>
 
               <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Date{" "}
-                <Box as={"span"} color={"red"}>
-                  *
-                </Box>
+                Date
               </Text>
               <Box position={"relative"} mb={"16px"}>
                 <Input

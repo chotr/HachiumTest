@@ -131,20 +131,12 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     };
 
     if (newTask.title !== "") {
-      const response = await api.post("/tasks", _newTask);
+      const response = await api.put(`/tasks/${task.id}`, _newTask);
 
       if (
         response.status.toString() === "201" ||
         response.status.toString() === "200"
       ) {
-        setTask({
-          title: "",
-          content: "",
-          completed: false,
-          date: "",
-          checkedTime: "",
-          tag: [],
-        });
 
         queryClient.invalidateQueries("tasks");
         // setSelectedTags([]);
