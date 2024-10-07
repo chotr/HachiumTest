@@ -218,6 +218,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         flexDirection="column"
         w="100%"
         mb="16px"
+        gap={"8px"}
       >
         <Flex
           alignItems="center"
@@ -228,12 +229,18 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           justifyContent="space-between"
           gap="10px"
         >
-          <Box>{task.title}</Box>
+          <Box mr={'auto'}>{task.title}</Box>
           {task.content.trim() !== "" && (
             <Button size="sm" onClick={() => handleToggle(index)}>
               Show {show ? "Less" : "More"}
             </Button>
           )}
+          <DeleteIcon
+          color={"gray"}
+          cursor={"pointer"}
+          onClick={() => handleDeleteTask()}
+        />
+        <EditIcon color={"blue"} cursor={"pointer"}  onClick={onOpenModal1}/>
         </Flex>
 
         {task.content.trim() !== "" && (
