@@ -17,24 +17,21 @@ export default function Today() {
   const [filter, setFilter] = useState<"all" | "completed" | "incomplete">(
     "all"
   );
-  const [tasks, setTasks] = useState<Task[]>([]);
   const queryClient = useQueryClient();
 
-  // Fetch danh sách tasks với query key 'tasks'
   const { data: tasksList, isLoading, error } = useQuery('tasks', async () => {
     const response = await api.get("/tasks");
     const today = new Date().toISOString().split("T")[0];
     const filteredTasksList = response.data.filter((task: Task) => task.date === today);
 
-    setTasks(filteredTasksList);
     
-    return response.data;
+    return filteredTasksList;
   });
 
 
   // Filter tasks
-  const filteredTasks = tasks.filter((task) => {
-    queryClient.invalidateQueries("tasks");
+  const filteredTasks = tasksList?.filter((task: Task) => {
+    // queryClient.invalidateQueries("tasks");
     if (filter === "completed") return task.completed;
     if (filter === "incomplete") return !task.completed;
     return true;

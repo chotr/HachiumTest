@@ -16,7 +16,6 @@ import {
   Button,
   useDisclosure,
   Textarea,
-  styled,
   Checkbox,
 } from "@chakra-ui/react";
 import {
@@ -25,7 +24,6 @@ import {
   DragHandleIcon,
   HamburgerIcon,
   RepeatClockIcon,
-  Search2Icon,
 } from "@chakra-ui/icons";
 import { NavLink } from "react-router-dom";
 import api from "../mockApi";
@@ -40,7 +38,16 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 export default function Layout() {
   const [tagsLits, setTagsLits] = useState<any[]>([]);
   const refMain = useRef<HTMLDivElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: inpenModal1,
+    onOpen: onOpenModal1,
+    onClose: onCloseModal1,
+  } = useDisclosure();
+  const {
+    isOpen: inpenModal2,
+    onOpen: onOpenModal2,
+    onClose: onCloseModal2,
+  } = useDisclosure();
   const [value, onChange] = useState<Value>(new Date());
   const [isOpenCal, setOpencal] = useState(false);
   const [newTask, setTask] = useState({
@@ -61,12 +68,12 @@ export default function Layout() {
     return response.data;
   });
 
-  const handleCheckboxChange = (tag: object) => {
+  const handleCheckboxChange = (tag: any) => {
     setSelectedTags((prev: any) => {
-      if (prev.includes(tag)) {
-        return prev.filter((item: any) => item !== tag);
+      if (prev.includes(tag.id)) {
+        return prev.filter((item: any) => item !== tag.id);
       } else {
-        return [...prev, tag];
+        return [...prev, tag.id];
       }
     });
 
@@ -95,7 +102,7 @@ export default function Layout() {
 
         queryClient.invalidateQueries("tasks");
 
-        onClose();
+        onCloseModal1();
       }
     }
   };
@@ -173,8 +180,7 @@ export default function Layout() {
                 marginBottom={"20px"}
                 ml={"auto"}
                 onClick={() => {
-                  console.log("Box clicked"); // Log để kiểm tra sự kiện onClick
-                  setNavOpen(true); // Đảm bảo setNavOpen được gọi
+                  setNavOpen(true);
                 }}
                 cursor={"pointer"}
               >
@@ -202,7 +208,7 @@ export default function Layout() {
                 mb={"32px"}
                 backgroundColor={"#fffbfb"}
                 cursor={"pointer"}
-                onClick={onOpen}
+                onClick={onOpenModal1}
               >
                 + Add a new task
               </Box>
@@ -271,6 +277,7 @@ export default function Layout() {
               </Flex>
 
               <Divider mb={"20px"} />
+
               <Text fontSize="18px" fontWeight={"500"} mb={"24px"}>
                 Tag
               </Text>
@@ -297,6 +304,7 @@ export default function Layout() {
                   borderRadius={"6px"}
                   style={{ display: "flex", alignItems: "center" }}
                   cursor={"pointer"}
+                  onClick={onOpenModal2}
                 >
                   + Add tag
                 </Box>
@@ -307,7 +315,7 @@ export default function Layout() {
             </Box>
           </Flex>
         </Box>
-        <Modal isOpen={isOpen} onClose={onClose} size={"5xl"}>
+        <Modal isOpen={inpenModal1} onClose={onCloseModal1} size={"5xl"}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Add your task</ModalHeader>
@@ -382,6 +390,7 @@ export default function Layout() {
                     fontSize={"14px"}
                     borderRadius={"6px"}
                     style={{ display: "flex", alignItems: "center" }}
+                    onChange={() => handleCheckboxChange(tag)}
                   >
                     {tag?.name}
                   </Checkbox>
@@ -390,7 +399,41 @@ export default function Layout() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="gray" mr={3} onClick={onClose}>
+              <Button colorScheme="gray" mr={3} onClick={onCloseModal1}>
+                Close
+              </Button>
+              <Button
+                backgroundColor={"#76a7d5"}
+                color={"white"}
+                _hover={{ backgroundColor: "#edab93" }}
+                onClick={() => addTask()}
+              >
+                Submit
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal isOpen={inpenModal2} onClose={onCloseModal2} size={"2xl"}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add your tag</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+                Tag name
+              </Text>
+
+              <Input
+                type="text"
+                placeholder="Enter tag name"
+                mb={"16px"}
+                onChange={(e) => setTask({ ...newTask, title: e.target.value })}
+              ></Input>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="gray" mr={3} onClick={onCloseModal1}>
                 Close
               </Button>
               <Button

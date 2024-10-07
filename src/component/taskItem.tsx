@@ -33,13 +33,14 @@ interface TaskProps {
 export default function TaskItem({ task, index, dateTask }: TaskProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [show, setShow] = useState(false);
-  const [isChecked, setIsChecked] = useState(task.completed);
+//   const [isChecked, setIsChecked] = useState(task.completed);
   const [tagsLits, setTagsLits] = useState<any[]>([]);
 
   const queryClient = useQueryClient();
   const { data: tasksList } = useQuery("tasks", async () => {
     const response = await api.get("/tasks");
     const today = new Date().toISOString().split("T")[0];
+    
     const filteredTasks = response.data.filter((task: Task) => {
       if (dateTask?.trim() === "prev") {
         return new Date(task.date) < new Date(today);
@@ -53,8 +54,6 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
       return task.date === today;
     });
 
-    setTasks(filteredTasks);
-
     return filteredTasks;
   });
 
@@ -65,9 +64,9 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     return response.data;
   });
 
-  useEffect(() => {
-    setIsChecked(task.completed);
-  }, []);
+//   useEffect(() => {
+//     setIsChecked(task.completed);
+//   }, []);
 
   const handleToggle = (index: number) => setShow(!show);
 
@@ -78,7 +77,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     if (task) {
       const updatedTask = { ...task, completed: !task.completed };
       await api.put(`/tasks/${id}`, updatedTask);
-      setIsChecked(!isChecked);
+    //   setIsChecked(!isChecked);
       queryClient.invalidateQueries("tasks");
     }
   };
@@ -221,7 +220,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         p={"8px"}
       >
         <Checkbox
-          isChecked={isChecked}
+          isChecked={task.completed}
           onChange={() => toggleTaskCompletion(task.id)}
           w={"full"}
         >
