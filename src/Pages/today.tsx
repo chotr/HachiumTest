@@ -17,7 +17,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../mockApi";
 import TaskItem from "../component/taskItem";
 import { useQuery, useQueryClient } from "react-query";
@@ -63,21 +63,23 @@ export default function Today() {
   });
   const [selectedTags, setSelectedTags] = useState([]);
   const queryClient = useQueryClient();
+  const today = new Date().toISOString().split("T")[0];
 
   const {
     data: tasksList,
     isLoading,
     error,
-  } = useQuery("tasks", async () => {
-    const response = await api.get("/tasks");
-    const today = new Date().toISOString().split("T")[0];
+  } = useQuery(
+    "tasks",
+    async () => {
+      const response = await api.get("/tasks");
 
-    const filteredTasksList = response.data.filter(
-      (task: Task) => task.date === today
-    );
-
-    return filteredTasksList;
-  });
+      return response.data;
+    },
+    {
+      select: (data) => data.filter((task: Task) => task.date === today),
+    },
+  );
 
   const { data: tagsList } = useQuery("tags", async () => {
     const response = await api.get("/tags");
@@ -85,7 +87,7 @@ export default function Today() {
     return response.data;
   });
 
-  const handleCheckboxChange = (tag: any) => {
+  const handleCheckboxChange = useCallback((tag: any) => {
     setSelectedTags((prev: any) => {
       if (prev.includes(tag.id)) {
         return prev.filter((item: any) => item !== tag.id);
@@ -93,14 +95,17 @@ export default function Today() {
         return [...prev, tag.id];
       }
     });
-  };
+  }, [setSelectedTags]);
 
   // Filter tasks
-  const filteredTasks = tasksList?.filter((task: Task) => {
-    if (filter === "completed") return task.completed;
-    if (filter === "incomplete") return !task.completed;
-    return true;
-  });
+  const filteredTasks = useMemo(() => {
+    if (!tasksList) return [];
+    return tasksList.filter((task: Task) => {
+      if (filter === "completed") return task.completed;
+      if (filter === "incomplete") return !task.completed;
+      return true;
+    });
+  }, [tasksList, filter]);
 
   const addTask = async () => {
     const _newTask = {
@@ -119,7 +124,7 @@ export default function Today() {
           title: "",
           content: "",
           completed: false,
-          date: "",
+          date: today,
           checkedTime: "",
           tag: [],
         });
@@ -141,6 +146,9 @@ export default function Today() {
       date: formattedDate,
     });
   };
+
+  if (isLoading) return <Text>Loading tasks...</Text>;
+  if (error) return <Text>Error loading tasks</Text>;
 
   return (
     <Box>
@@ -169,6 +177,7 @@ export default function Today() {
           }
           border={"1px solid rgb(235, 235, 235)"}
           _hover={{ backgroundColor: "rgb(235, 235, 235)" }}
+          fontSize={{ base: "16px", md: "18px" }}
         >
           All
         </Button>

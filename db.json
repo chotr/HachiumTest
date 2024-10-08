@@ -40,7 +40,8 @@
       "checkedTime": "2024-10-08T09:15:00Z",
       "tag": [
         "436b",
-        "2aa8"
+        "2aa8",
+        "4d35"
       ],
       "id": "32e5"
     },
@@ -62,10 +63,7 @@
       "completed": false,
       "date": "2024-10-08",
       "checkedTime": "2024-10-08T11:00:00Z",
-      "tag": [
-        "436b",
-        "2aa8"
-      ],
+      "tag": [],
       "id": "978969"
     },
     {
@@ -215,20 +213,22 @@
       "date": "2024-10-08",
       "checkedTime": "",
       "tag": [
-        "90e2"
+        "90e2",
+        "f052"
       ],
       "id": "8dd2"
     },
     {
-      "id": "9004",
       "title": "dưqdwqdwqdwqdwqdwqddư",
       "content": "dưqdqwdwqdwqdwqdwqdwqd",
       "completed": false,
       "date": "2024-10-08",
       "checkedTime": "",
       "tag": [
-        "4d35"
-      ]
+        "4d35",
+        "436b"
+      ],
+      "id": "9004"
     }
   ],
   "tags": [

@@ -17,7 +17,7 @@ import {
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import api from "../mockApi";
 import formatCustomDate from "../Utils/formatTime";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -45,7 +45,7 @@ interface TaskProps {
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-export default function TaskItem({ task, index, dateTask }: TaskProps) {
+const TaskItem = React.memo(({ task, index, dateTask }: TaskProps) => {
   const [show, setShow] = useState(false);
   const {
     isOpen: inpenModal1,
@@ -63,30 +63,37 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
     tag: task.tag,
   });
   const [tagsLits, setTagsLits] = useState<any[]>(task.tag);
-
+  const today = new Date().toISOString().split("T")[0];
   const queryClient = useQueryClient();
 
-  const { data: tasksList } = useQuery("tasks", async () => {
-    const response = await api.get("/tasks");
-    const today = new Date().toISOString().split("T")[0];
+  const {
+    data: tasksList,
+    isLoading,
+    error,
+  } = useQuery(
+    "tasks",
+    async () => {
+      const response = await api.get("/tasks");
 
-    const filteredTasks = response.data.filter((task: Task) => {
-      if (dateTask?.trim() === "prev") {
-        return new Date(task.date) < new Date(today);
-      }
-      if (dateTask?.trim() === "today") {
-        return task.date === today;
-      }
-      if (dateTask?.trim() === "next") {
-        return new Date(task.date) > new Date(today);
-      }
-      return task.date === today;
-    });
+      return response.data;
+    },
+    {
+      select: (data) =>
+        data.filter((task: Task) => {
+          if (dateTask?.trim() === "prev") {
+            return new Date(task.date) < new Date(today);
+          }
+          if (dateTask?.trim() === "today") {
+            return task.date === today;
+          }
+          if (dateTask?.trim() === "next") {
+            return new Date(task.date) > new Date(today);
+          }
+          return task.date === today;
+        }),
+    }
+  );
 
-    return filteredTasks;
-  });
-
-  // Mutation delete task
   const deleteTaskMutation = useMutation(
     async (taskId) => {
       await api.delete(`/tasks/${taskId}`);
@@ -128,6 +135,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
   const editTask = async () => {
     const _newTask = {
       ...newTask,
+      tag: [...tagsLits],
     };
 
     if (newTask.title !== "") {
@@ -138,13 +146,11 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         response.status.toString() === "200"
       ) {
         queryClient.invalidateQueries("tasks");
-        // setSelectedTags([]);
         onCloseModal1();
       }
     }
   };
 
-  // Toggle task completion
   const toggleTaskCompletion = async (id: string) => {
     const task = tasksList.find((t: any) => t.id === id);
 
@@ -165,6 +171,9 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
       }
     });
   };
+
+  if (isLoading) return <Text>Loading tasks...</Text>;
+  if (error) return <Text>Error loading tasks</Text>;
 
   if (dateTask?.trim() === "prev") {
     return (
@@ -315,11 +324,19 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           isChecked={task.completed}
           onChange={() => toggleTaskCompletion(task.id)}
           w={"full"}
+          wordBreak={"break-word"}
         >
-          {task.title}
+          <Box as={"span"} fontSize={{ base: "14px", md: "16px" }}>
+            {task.title}
+          </Box>
         </Checkbox>
         {task.content.trim() !== "" ? (
-          <Button size="sm" onClick={() => handleToggle(index)}>
+          <Button
+            flexShrink={"0"}
+            size="sm"
+            fontSize={{ base: "12px", md: "14px" }}
+            onClick={() => handleToggle(index)}
+          >
             Show {show ? "Less" : "More"}
           </Button>
         ) : null}
@@ -490,4 +507,6 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
       </Modal>
     </HStack>
   );
-}
+});
+
+export default TaskItem;

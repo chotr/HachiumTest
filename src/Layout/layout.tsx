@@ -28,10 +28,8 @@ import {
 } from "@chakra-ui/icons";
 import { NavLink } from "react-router-dom";
 import api from "../mockApi";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { relative } from "path";
 
 type ValuePiece = Date | string | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -42,7 +40,6 @@ interface Tag {
 }
 
 export default function Layout() {
-  // const [tagsLits, setTagsLits] = useState<any[]>([]);
   const refMain = useRef<HTMLDivElement>(null);
 
   const {
@@ -50,21 +47,10 @@ export default function Layout() {
     onOpen: onOpenModal2,
     onClose: onCloseModal2,
   } = useDisclosure();
-  const [value, onChange] = useState<Value>(new Date().toISOString().split("T")[0]);
-  const [isOpenCal, setOpencal] = useState(false);
-  const [newTask, setTask] = useState({
-    title: "",
-    content: "",
-    completed: false,
-    date: new Date().toISOString().split("T")[0],
-    checkedTime: "",
-    tag: [],
-  });
   const [newTag, setNewTag] = useState({
     name: "",
     color: "wheat",
   });
-  const [selectedTags, setSelectedTags] = useState([]);
   const queryClient = useQueryClient();
   const [navOpen, setNavOpen] = useState(true);
 
@@ -92,22 +78,8 @@ export default function Layout() {
     }
   };
 
-  // const handleCheckboxChange = (tag: any) => {
-  //   setSelectedTags((prev: any) => {
-  //     if (prev.includes(tag.id)) {
-  //       return prev.filter((item: any) => item !== tag.id);
-  //     } else {
-  //       return [...prev, tag.id];
-  //     }
-  //   });
-  // };
 
   const toggleNav = () => setNavOpen(!navOpen);
-
-  // Add new task
-
-
-
 
   return (
     <div ref={refMain}>
