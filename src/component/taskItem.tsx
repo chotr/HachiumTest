@@ -55,14 +55,14 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
   const [value, onChange] = useState<Value>(task.date);
   const [isOpenCal, setOpencal] = useState(false);
   const [newTask, setTask] = useState({
-    title: task.title,  
+    title: task.title,
     content: task.content,
     completed: task.completed,
     date: task.date,
     checkedTime: task.checkedTime,
     tag: task.tag,
   });
-  const [tagsLits, setTagsLits] = useState<any[]>([]);
+  const [tagsLits, setTagsLits] = useState<any[]>(task.tag);
 
   const queryClient = useQueryClient();
 
@@ -137,7 +137,6 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
         response.status.toString() === "201" ||
         response.status.toString() === "200"
       ) {
-
         queryClient.invalidateQueries("tasks");
         // setSelectedTags([]);
         onCloseModal1();
@@ -155,6 +154,16 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
       //   setIsChecked(!isChecked);
       queryClient.invalidateQueries("tasks");
     }
+  };
+
+  const handleCheckboxChange = (tag: any) => {
+    setTagsLits((prev: any) => {
+      if (prev.includes(tag.id)) {
+        return prev.filter((item: any) => item !== tag.id);
+      } else {
+        return [...prev, tag.id];
+      }
+    });
   };
 
   if (dateTask?.trim() === "prev") {
@@ -229,18 +238,18 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           justifyContent="space-between"
           gap="10px"
         >
-          <Box mr={'auto'}>{task.title}</Box>
+          <Box mr={"auto"}>{task.title}</Box>
           {task.content.trim() !== "" && (
             <Button size="sm" onClick={() => handleToggle(index)}>
               Show {show ? "Less" : "More"}
             </Button>
           )}
           <DeleteIcon
-          color={"gray"}
-          cursor={"pointer"}
-          onClick={() => handleDeleteTask()}
-        />
-        <EditIcon color={"blue"} cursor={"pointer"}  onClick={onOpenModal1}/>
+            color={"gray"}
+            cursor={"pointer"}
+            onClick={() => handleDeleteTask()}
+          />
+          <EditIcon color={"blue"} cursor={"pointer"} onClick={onOpenModal1} />
         </Flex>
 
         {task.content.trim() !== "" && (
@@ -319,7 +328,7 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
           cursor={"pointer"}
           onClick={() => handleDeleteTask()}
         />
-        <EditIcon color={"blue"} cursor={"pointer"}  onClick={onOpenModal1}/>
+        <EditIcon color={"blue"} cursor={"pointer"} onClick={onOpenModal1} />
       </Flex>
       {task.content.trim() !== "" ? (
         <Collapse startingHeight={0} in={show} style={{ width: "100%" }}>
@@ -416,26 +425,52 @@ export default function TaskItem({ task, index, dateTask }: TaskProps) {
               )}
             </Box>
 
-            {/* <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
+            <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
               Choose tag
-            </Text> */}
+            </Text>
 
-            {/* <Flex flexWrap={"wrap"} gap={"8px"}>
-                {tagsList?.map((tag: any, index: number) => (
-                  <Checkbox
-                    key={index}
-                    backgroundColor={tag?.color}
-                    height={"30px"}
-                    padding={"0 10px"}
-                    fontSize={"14px"}
-                    borderRadius={"6px"}
-                    style={{ display: "flex", alignItems: "center" }}
-                    onChange={() => handleCheckboxChange(tag)}
-                  >
-                    {tag?.name}
-                  </Checkbox>
-                ))}
-              </Flex> */}
+            <Flex flexWrap={"wrap"} gap={"8px"}>
+              {tagsList?.map((tag: any, index: number) => (
+                <Checkbox
+                  key={index}
+                  backgroundColor={tag?.color}
+                  height={"30px"}
+                  padding={"0 10px"}
+                  fontSize={"14px"}
+                  borderRadius={"6px"}
+                  style={{ display: "flex", alignItems: "center" }}
+                  isChecked={tagsLits.includes(tag.id)}
+                  onChange={() => handleCheckboxChange(tag)}
+                >
+                  {tag?.name}
+                </Checkbox>
+              ))}
+
+              {/* {task?.tag?.map((tag: string) => {
+                const infoTag = tagsList?.find(
+                  (tagOther: any) => tagOther.id.trim() === tag
+                );
+
+                {
+                  infoTag && (
+                    <Checkbox
+                      key={index}
+                      backgroundColor={infoTag?.color}
+                      height={"30px"}
+                      padding={"0 10px"}
+                      fontSize={"14px"}
+                      borderRadius={"6px"}
+                      style={{ display: "flex", alignItems: "center" }}
+                      // onChange={() => handleCheckboxChange(tag)}
+                    >
+                      {infoTag?.name}
+                    </Checkbox>
+                  );
+                }
+
+                return null;
+              })} */}
+            </Flex>
           </ModalBody>
 
           <ModalFooter>

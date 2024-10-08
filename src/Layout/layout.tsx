@@ -24,6 +24,7 @@ import {
   DragHandleIcon,
   HamburgerIcon,
   RepeatClockIcon,
+  Search2Icon,
 } from "@chakra-ui/icons";
 import { NavLink } from "react-router-dom";
 import api from "../mockApi";
@@ -43,11 +44,7 @@ interface Tag {
 export default function Layout() {
   // const [tagsLits, setTagsLits] = useState<any[]>([]);
   const refMain = useRef<HTMLDivElement>(null);
-  const {
-    isOpen: inpenModal1,
-    onOpen: onOpenModal1,
-    onClose: onCloseModal1,
-  } = useDisclosure();
+
   const {
     isOpen: inpenModal2,
     onOpen: onOpenModal2,
@@ -95,58 +92,22 @@ export default function Layout() {
     }
   };
 
-  const handleCheckboxChange = (tag: any) => {
-    setSelectedTags((prev: any) => {
-      if (prev.includes(tag.id)) {
-        return prev.filter((item: any) => item !== tag.id);
-      } else {
-        return [...prev, tag.id];
-      }
-    });
-  };
+  // const handleCheckboxChange = (tag: any) => {
+  //   setSelectedTags((prev: any) => {
+  //     if (prev.includes(tag.id)) {
+  //       return prev.filter((item: any) => item !== tag.id);
+  //     } else {
+  //       return [...prev, tag.id];
+  //     }
+  //   });
+  // };
 
   const toggleNav = () => setNavOpen(!navOpen);
 
   // Add new task
-  const addTask = async () => {
-    const _newTask = {
-      ...newTask,
-      tag: [...selectedTags],
-    };
 
-    if (newTask.title !== "") {
-      const response = await api.post("/tasks", _newTask);
 
-      if (
-        response.status.toString() === "201" ||
-        response.status.toString() === "200"
-      ) {
-        setTask({
-          title: "",
-          content: "",
-          completed: false,
-          date: "",
-          checkedTime: "",
-          tag: [],
-        });
 
-        queryClient.invalidateQueries("tasks");
-        setSelectedTags([]);
-        onCloseModal1();
-      }
-    }
-  };
-
-  const handleChangeDate = (date: any) => {
-    const formattedDate = date.toISOString().split("T")[0];
-
-    onChange(formattedDate);
-    setOpencal(false);
-    setTask({
-      ...newTask,
-      date: formattedDate,
-    });
-  };
 
   return (
     <div ref={refMain}>
@@ -217,7 +178,7 @@ export default function Layout() {
                 <CloseIcon />
               </Box>
               {/* search */}
-              {/* <Box position={"relative"} mb={"16px"}>
+              <Box position={"relative"} mb={"16px"}>
                 <Input
                   placeholder="Search task"
                   pl={"40px"}
@@ -229,21 +190,9 @@ export default function Layout() {
                   top={"50%"}
                   transform={"translate(0, -50%)"}
                 />
-              </Box> */}
-
-              <Box
-                borderRadius={"10px"}
-                border={"1px solid rgb(235, 235, 235)"}
-                p={"10px 20px"}
-                mb={"32px"}
-                backgroundColor={"#fffbfb"}
-                cursor={"pointer"}
-                onClick={onOpenModal1}
-                _hover={{backgroundColor: 'white'}}
-                transition={"all 0.2s ease-in-out"}
-              >
-                + Add a new task
               </Box>
+
+              
 
               <Text fontSize="18px" fontWeight={"500"} mb={"24px"}>
                 Task
@@ -352,98 +301,7 @@ export default function Layout() {
             </Box>
           </Flex>
         </Box>
-        <Modal isOpen={inpenModal1} onClose={onCloseModal1} size={"5xl"}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Add your task</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Title{" "}
-                <Box as={"span"} color={"red"}>
-                  *
-                </Box>
-              </Text>
-
-              <Input
-                type="text"
-                placeholder="Enter your task title"
-                mb={"16px"}
-                onChange={(e) => setTask({ ...newTask, title: e.target.value })}
-              ></Input>
-              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Content
-              </Text>
-
-              <Textarea
-                placeholder="Enter your task content"
-                minHeight={"200px"}
-                mb={"16px"}
-                onChange={(e) =>
-                  setTask({ ...newTask, content: e.target.value })
-                }
-              ></Textarea>
-
-              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Date
-              </Text>
-              <Box position={"relative"} mb={"16px"}>
-                <Input
-                  type="text"
-                  placeholder="Enter date"
-                  value={value?.toLocaleString()}
-                  mb={"16px"}
-                  onClick={() => {
-                    setOpencal(!isOpenCal);
-                  }}
-                  readOnly
-                  cursor={"pointer"}
-                  userSelect={"none"}
-                />
-                {isOpenCal && (
-                  <Box position={"absolute"} bottom={"100%"}>
-                    <Calendar onChange={handleChangeDate} value={value} />
-                  </Box>
-                )}
-              </Box>
-
-              <Text fontSize={"18px"} fontWeight={"500"} mb={"10px"}>
-                Choose tag
-              </Text>
-
-              <Flex flexWrap={"wrap"} gap={"8px"}>
-                {tagsList?.map((tag: any, index: number) => (
-                  <Checkbox
-                    key={index}
-                    backgroundColor={tag?.color}
-                    height={"30px"}
-                    padding={"0 10px"}
-                    fontSize={"14px"}
-                    borderRadius={"6px"}
-                    style={{ display: "flex", alignItems: "center" }}
-                    onChange={() => handleCheckboxChange(tag)}
-                  >
-                    {tag?.name}
-                  </Checkbox>
-                ))}
-              </Flex>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme="gray" mr={3} onClick={onCloseModal1}>
-                Close
-              </Button>
-              <Button
-                backgroundColor={"#76a7d5"}
-                color={"white"}
-                _hover={{ backgroundColor: "#edab93" }}
-                onClick={() => addTask()}
-              >
-                Submit
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+ 
 
         <Modal isOpen={inpenModal2} onClose={onCloseModal2} size={"2xl"}>
           <ModalOverlay />
@@ -478,7 +336,7 @@ export default function Layout() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="gray" mr={3} onClick={onCloseModal1}>
+              <Button colorScheme="gray" mr={3} onClick={onCloseModal2}>
                 Close
               </Button>
               <Button
