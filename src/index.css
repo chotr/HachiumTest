@@ -19,3 +19,20 @@ code {
 .nav-link:hover {
   background-color: rgb(235, 235, 235) !important;
 }
+
+.menu-list {
+  >a {
+    transition: all 0.2s ease-in-out;
+    border-radius: 6px;
+    outline: 2px solid transparent;
+
+    &:hover {
+      outline: 1px solid #b0b9c2;
+    }
+  }
+
+  >.active {
+    outline: 1px solid #b0b9c2;
+
+  }
+}

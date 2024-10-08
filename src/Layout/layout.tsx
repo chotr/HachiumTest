@@ -78,7 +78,6 @@ export default function Layout() {
     }
   };
 
-
   const toggleNav = () => setNavOpen(!navOpen);
 
   return (
@@ -164,8 +163,6 @@ export default function Layout() {
                 />
               </Box>
 
-              
-
               <Text fontSize="18px" fontWeight={"500"} mb={"24px"}>
                 Task
               </Text>
@@ -174,8 +171,7 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/"}
-                    className={'nav-link'}
-
+                    className={"nav-link"}
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -185,9 +181,8 @@ export default function Layout() {
                         ? "rgb(235, 235, 235)"
                         : "transparent",
                       borderRadius: "8px",
-                      transition: "all 0.2s ease-in-out"
+                      transition: "all 0.2s ease-in-out",
                     })}
-
                   >
                     <BellIcon /> Today Tasks
                   </NavLink>
@@ -196,7 +191,7 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/upcomming"}
-                    className={'nav-link'}
+                    className={"nav-link"}
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -216,7 +211,7 @@ export default function Layout() {
                 <Box>
                   <NavLink
                     to={"/old"}
-                    className={'nav-link'}
+                    className={"nav-link"}
                     style={({ isActive }) => ({
                       display: "flex",
                       gap: "16px",
@@ -240,19 +235,21 @@ export default function Layout() {
                 Tag
               </Text>
 
-              <Flex flexWrap={"wrap"} gap={"8px"}>
+              <Flex flexWrap={"wrap"} gap={"8px"} className="menu-list">
                 {tagsList?.map((tag: any, index: number) => (
-                  <Box
-                    key={index}
-                    backgroundColor={tag?.color}
-                    height={"30px"}
-                    padding={"0 10px"}
-                    fontSize={"14px"}
-                    borderRadius={"6px"}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    {tag?.name}
-                  </Box>
+                  <NavLink to={`/tag/${tag.id}`} key={index} style={{display:  'inline-block'}}>
+                    <Box
+                      as={"span"}
+                      backgroundColor={tag?.color}
+                      height={"30px"}
+                      padding={"0 10px"}
+                      fontSize={"14px"}
+                      borderRadius={"6px"}
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
+                      {tag?.name}
+                    </Box>
+                  </NavLink>
                 ))}
                 <Box
                   backgroundColor={"rgb(235, 235, 235)"}
@@ -273,7 +270,6 @@ export default function Layout() {
             </Box>
           </Flex>
         </Box>
- 
 
         <Modal isOpen={inpenModal2} onClose={onCloseModal2} size={"2xl"}>
           <ModalOverlay />
