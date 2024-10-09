@@ -39,6 +39,16 @@ interface Tag {
   color: string;
 }
 
+interface Task {
+  id: string;
+  title: string;
+  content: "string";
+  date: string;
+  completed: boolean;
+  checkedTime: "";
+  tag: [];
+}
+
 export default function Layout() {
   const refMain = useRef<HTMLDivElement>(null);
 
@@ -56,6 +66,17 @@ export default function Layout() {
 
   const { data: tagsList } = useQuery("tags", async () => {
     const response = await api.get("/tags");
+
+    return response.data;
+  });
+  const today = new Date().toISOString().split("T")[0];
+
+  const {
+    data: tasksList,
+    isLoading,
+    error,
+  } = useQuery("tasks", async () => {
+    const response = await api.get("/tasks");
 
     return response.data;
   });
@@ -184,7 +205,23 @@ export default function Layout() {
                       transition: "all 0.2s ease-in-out",
                     })}
                   >
-                    <BellIcon /> Today Tasks
+                    <BellIcon />
+                    Today Tasks
+                    <Box
+                      ml={"auto"}
+                      as={"span"}
+                      fontSize={"13px"}
+                      fontWeight={"400"}
+                      border={"1px solid rgb(235, 235, 235)"}
+                      borderRadius={"8px"}
+                      p={"5px 10px"}
+                      backgroundColor={"white"}
+                    >
+                      {
+                        tasksList?.filter((task: Task) => task.date === today)
+                          .length
+                      }
+                    </Box>
                   </NavLink>
                 </Box>
 
@@ -204,7 +241,24 @@ export default function Layout() {
                       transition: "all 0.2s ease-in-out",
                     })}
                   >
-                    <DragHandleIcon /> Upcoming Taks
+                    <DragHandleIcon />
+                    Upcoming Taks
+                    <Box
+                      ml={"auto"}
+                      as={"span"}
+                      fontSize={"13px"}
+                      fontWeight={"400"}
+                      border={"1px solid rgb(235, 235, 235)"}
+                      borderRadius={"8px"}
+                      p={"5px 10px"}
+                      backgroundColor={"white"}
+                    >
+                      {
+                        tasksList?.filter(
+                          (task: Task) => new Date(task.date) > new Date(today)
+                        ).length
+                      }
+                    </Box>
                   </NavLink>
                 </Box>
 
@@ -224,7 +278,9 @@ export default function Layout() {
                       transition: "all 0.2s ease-in-out",
                     })}
                   >
-                    <RepeatClockIcon /> Old Tasks
+                    <RepeatClockIcon />
+                    Old Tasks
+                   
                   </NavLink>
                 </Box>
               </Flex>
@@ -237,7 +293,11 @@ export default function Layout() {
 
               <Flex flexWrap={"wrap"} gap={"8px"} className="menu-list">
                 {tagsList?.map((tag: any, index: number) => (
-                  <NavLink to={`/tag/${tag.id}`} key={index} style={{display:  'inline-block'}}>
+                  <NavLink
+                    to={`/tag/${tag.id}`}
+                    key={index}
+                    style={{ display: "inline-block" }}
+                  >
                     <Box
                       as={"span"}
                       backgroundColor={tag?.color}
@@ -265,7 +325,7 @@ export default function Layout() {
                 </Box>
               </Flex>
             </Box>
-            <Box flex={1}>
+            <Box flex={1} p={{ base: "0", xl: "10px 0" }}>
               <Outlet></Outlet>
             </Box>
           </Flex>

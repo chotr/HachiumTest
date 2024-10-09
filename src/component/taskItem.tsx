@@ -175,135 +175,6 @@ const TaskItem = React.memo(({ task, index, dateTask }: TaskProps) => {
   if (isLoading) return <Text>Loading tasks...</Text>;
   if (error) return <Text>Error loading tasks</Text>;
 
-  if (dateTask?.trim() === "prev") {
-    return (
-      <HStack
-        key={task.id}
-        justify="space-between"
-        flexDirection={"column"}
-        w="100%"
-      >
-        <Flex
-          alignItems={"center"}
-          w={"full"}
-          border={"1px solid rgb(235, 235, 235)"}
-          borderRadius={"6px"}
-          p={"8px"}
-        >
-          <Checkbox
-            isChecked={task.completed}
-            onChange={() => toggleTaskCompletion(task.id)}
-            w={"full"}
-            pointerEvents={"none"}
-            disabled
-          >
-            {task.title}
-          </Checkbox>
-          {task.content.trim() !== "" ? (
-            <Button size="sm" onClick={() => handleToggle(index)}>
-              Show {show ? "Less" : "More"}
-            </Button>
-          ) : null}
-        </Flex>
-        {task.content.trim() !== "" ? (
-          <Collapse startingHeight={0} in={show} style={{ width: "100%" }}>
-            <Text
-              as="div"
-              whiteSpace="pre-wrap"
-              border={"1px solid rgb(244, 244, 244)"}
-              borderRadius={"6px"}
-              p={"24px"}
-            >
-              {task.content}
-            </Text>
-          </Collapse>
-        ) : null}
-
-        {task.checkedTime.trim() !== "" && (
-          <Text fontSize={"14px"} w="full" opacity={"0.5"}>
-            Completed time: {formatCustomDate(task.checkedTime)}{" "}
-          </Text>
-        )}
-      </HStack>
-    );
-  }
-
-  if (dateTask?.trim() === "next") {
-    return (
-      <HStack
-        key={task.id}
-        justify="space-between"
-        flexDirection="column"
-        w="100%"
-        mb="16px"
-        gap={"8px"}
-      >
-        <Flex
-          alignItems="center"
-          w="full"
-          border="1px solid rgb(235, 235, 235)"
-          borderRadius="6px"
-          p="8px"
-          justifyContent="space-between"
-          gap="10px"
-        >
-          <Box mr={"auto"}>{task.title}</Box>
-          {task.content.trim() !== "" && (
-            <Button size="sm" onClick={() => handleToggle(index)}>
-              Show {show ? "Less" : "More"}
-            </Button>
-          )}
-          <DeleteIcon
-            color={"gray"}
-            cursor={"pointer"}
-            onClick={() => handleDeleteTask()}
-          />
-          <EditIcon color={"blue"} cursor={"pointer"} onClick={onOpenModal1} />
-        </Flex>
-
-        {task.content.trim() !== "" && (
-          <Collapse startingHeight={0} in={show} style={{ width: "100%" }}>
-            <Text
-              as="div"
-              whiteSpace="pre-wrap"
-              border="1px solid rgb(244, 244, 244)"
-              borderRadius="6px"
-              p="24px"
-            >
-              {task.content}
-            </Text>
-          </Collapse>
-        )}
-
-        <Flex w={"full"} flexWrap={"wrap"} gap={"8px"}>
-          {task.tag.map((itemTag: any) => {
-            const infoTag = tagsList?.find(
-              (tagOther: any) => tagOther.id.trim() === itemTag
-            );
-
-            if (infoTag) {
-              return (
-                <Box
-                  key={index}
-                  backgroundColor={infoTag?.color}
-                  height={"30px"}
-                  padding={"0 10px"}
-                  fontSize={"14px"}
-                  borderRadius={"6px"}
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  {infoTag?.name}
-                </Box>
-              );
-            }
-
-            return null;
-          })}
-        </Flex>
-      </HStack>
-    );
-  }
-
   return (
     <HStack
       key={task.id}
@@ -320,16 +191,40 @@ const TaskItem = React.memo(({ task, index, dateTask }: TaskProps) => {
         p={"8px"}
         gap={"15px"}
       >
-        <Checkbox
-          isChecked={task.completed}
-          onChange={() => toggleTaskCompletion(task.id)}
-          w={"full"}
-          wordBreak={"break-word"}
-        >
-          <Box as={"span"} fontSize={{ base: "14px", md: "16px" }}>
+        {dateTask?.trim() === "prev" && (
+          <Checkbox
+            isChecked={task.completed}
+            onChange={() => toggleTaskCompletion(task.id)}
+            w={"full"}
+            pointerEvents={"none"}
+            disabled
+          >
+            {task.title}
+          </Checkbox>
+        )}
+
+        {/* box today */}
+        {dateTask?.trim() === "today" ||
+          (!dateTask && (
+            <Checkbox
+              isChecked={task.completed}
+              onChange={() => toggleTaskCompletion(task.id)}
+              w={"full"}
+              wordBreak={"break-word"}
+            >
+              <Box as={"span"} fontSize={{ base: "14px", md: "16px" }}>
+                {task.title}
+              </Box>
+            </Checkbox>
+          ))}
+
+        {/* box feature */}
+        {dateTask?.trim() === "next" && (
+          <Box mr={"auto"} fontSize={{ base: "14px", md: "16px" }}>
             {task.title}
           </Box>
-        </Checkbox>
+        )}
+
         {task.content.trim() !== "" ? (
           <Button
             flexShrink={"0"}
@@ -340,12 +235,21 @@ const TaskItem = React.memo(({ task, index, dateTask }: TaskProps) => {
             Show {show ? "Less" : "More"}
           </Button>
         ) : null}
-        <DeleteIcon
-          color={"gray"}
-          cursor={"pointer"}
-          onClick={() => handleDeleteTask()}
-        />
-        <EditIcon color={"blue"} cursor={"pointer"} onClick={onOpenModal1} />
+
+        {dateTask?.trim() !== "prev" && (
+          <>
+            <DeleteIcon
+              color={"gray"}
+              cursor={"pointer"}
+              onClick={() => handleDeleteTask()}
+            />
+            <EditIcon
+              color={"blue"}
+              cursor={"pointer"}
+              onClick={onOpenModal1}
+            />
+          </>
+        )}
       </Flex>
       {task.content.trim() !== "" ? (
         <Collapse startingHeight={0} in={show} style={{ width: "100%" }}>
@@ -377,6 +281,7 @@ const TaskItem = React.memo(({ task, index, dateTask }: TaskProps) => {
                 fontSize={"14px"}
                 borderRadius={"6px"}
                 style={{ display: "flex", alignItems: "center" }}
+                filter={dateTask?.trim() === "prev" ? "grayscale(0.3)": ""}
               >
                 {infoTag?.name}
               </Box>
